@@ -1,4 +1,4 @@
-package logging
+package main
 
 import (
     "bufio"
@@ -19,18 +19,21 @@ func (sl *SSHLogger) LogFailedAttempt(ip, username, port string) error {
     
     var message string = fmt.Sprintf("Failed password for %s from %s port %s ssh2", username, ip, port)
     err = journald.Send(message, journald.PriorityInfo,
-            map[string]interface{
+            map[string]interface{}{
                 "SSHD_IP_ADDRESS": ip,
                 "SSHD_USERNAME": username,
                 "SSHD_EVENT": "FailedPassword",
                 "SYSLOG_IDENTIFIER": "sshd",
+		"_SYSTEMD_UNIT": "sshd.service",
+		"_COMM": "sshd",
+		"PRIORITY": 6,
             })
     if err != nil {
         return fmt.Errorf("failed to log to journal: %w\n", err)
     }
 
-    log.Printf("Logged generic SSH message: %s\n", message)
     return nil
+    log.Printf("Logged generic SSH message: %s\n", message)
 }
 
 
@@ -41,5 +44,4 @@ func (sl *SSHLogger) LogMessage(message string, priority journald.Priority) erro
     }
 
     fmt.Printf("Logged message successfully: %s\n", message)
-    return nil
 }
