@@ -1,7 +1,6 @@
 package logging
 
 import (
-    "bufio"
     "fmt"
     
     "github.com/ssgreg/journald"
@@ -29,19 +28,19 @@ func (sl *SSHLogger) LogFailedAttempt(ip, username, port string) error {
 		"PRIORITY": 6,
             })
     if err != nil {
-        return fmt.Errorf("failed to log to journal: %w\n", err)
+        return fmt.Errorf("failed to log to journal: %w", err)
     }
 
     return nil
-    log.Printf("Logged generic SSH message: %s\n", message)
 }
 
 
 func (sl *SSHLogger) LogMessage(message string, priority journald.Priority) error {
-    var err error
-    err = journald.Print(priority, message); if err != nil {
-        return fmt.Errorf("[!] Failed to log message to journald: %w\n", err)
+    var err error = journald.Print(priority, message)
+    if err != nil {
+        return fmt.Errorf("[!] Failed to log message to journald: %w", err)
     }
 
     fmt.Printf("Logged message successfully: %s\n", message)
+    return nil
 }
