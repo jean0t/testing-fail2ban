@@ -32,7 +32,7 @@ func TestSSHFailedToAuthenticate(t *testing.T) {
 	var timeNow string
 	t.Run("Testing Logging for Failed Password", func(t *testing.T) {
 		var sshLog *logging.SSHLogger = logging.NewSSHLogger()
-		var logMessage string = ""
+		var logMessage string
 		var ip_test, username_test, port_test string = fmt.Sprintf("192.108.3.%s", strconv.Itoa(rand.Intn(255))), "test", strconv.Itoa(rand.Intn(25)) 
 		timeNow = time.Now().Format("15:04:05")
 		err = sshLog.LogFailedAttempt(ip_test, username_test, port_test)
