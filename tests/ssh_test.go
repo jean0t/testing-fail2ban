@@ -6,6 +6,9 @@ import (
 	"time"
 	"bytes"
 	"strings"
+	"fmt"
+	"math/rand"
+	"strconv"
 
 	"github.com/jean0t/testing-fail2ban/internal/logging"
 )
@@ -15,9 +18,9 @@ func TestSSHFailedToAuthenticate(t *testing.T) {
 	var timeNow string
 	t.Run("Testing Logging", func(t *testing.T) {
 		var sshLog *logging.SSHLogger = logging.NewSSHLogger()
-		var ip, username, port string = "192.108.3.2", "test", "22" 
+		var ip_test, username_test, port_test string = fmt.Sprintf("192.108.3.%s", strconv.Itoa(rand.Intn(255))), "test", strconv.Itoa(rand.Intn(25)) 
 		timeNow = time.Now().Format("15:04:05")
-		err = sshLog.LogFailedAttempt(ip, username, port)
+		err = sshLog.LogFailedAttempt(ip_test, username_test, port_test)
 		if err != nil {
 			t.Error("Error when writing to journal")
 		}
@@ -33,8 +36,9 @@ func TestSSHFailedToAuthenticate(t *testing.T) {
 		if strings.Contains(output.String(), timeNow) {
 			t.Errorf("The time for the journal entry is wrong")
 		}
-		if strings.Contains(output.String(), "Failed password for test from 192.108.3.2 port 22 ssh2") {
-			t.Errorf("Journalctl wasn't logged for ip: %s, user: %s, port: %s\nOutput is: %s", ip, username, port, output.String())
+		fmt.Printf("output journal is: %s", output.String())
+		if strings.Contains(output.String(), fmt.Sprintf("Failed password for test from %s port %s ssh2", ip_test, port_test)) {
+			t.Errorf("Journalctl wasn't logged for ip: %s, user: %s, port: %s\nOutput is: %s", ip_test, username_test, port_test, output.String())
 		}
 
 	})
